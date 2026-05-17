@@ -21,8 +21,8 @@ if st.button("🔍 Analyze Stock", type="primary"):
                 st.error("Not enough data. Market may be closed.")
             else:
                 df['EMA9'] = EMAIndicator(df['Close'], window=9).ema_indicator()
-df['EMA21'] = EMAIndicator(df['Close'], window=21).ema_indicator()
-df['RSI'] = RSIIndicator(df['Close'], window=14).rsi()
+                df['EMA21'] = EMAIndicator(df['Close'], window=21).ema_indicator()
+                df['RSI'] = RSIIndicator(df['Close'], window=14).rsi()
                 
                 df['VWAP'] = ta.vwap(df['High'], df['Low'], df['Close'], df['Volume'])
 
