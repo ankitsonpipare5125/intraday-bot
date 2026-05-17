@@ -1,7 +1,8 @@
 import streamlit as st
 import yfinance as yf
 import pandas as pd
-import pandas_ta as ta
+from ta.trend import EMAIndicator
+from ta.momentum import RSIIndicator
 from datetime import datetime
 
 st.set_page_config(page_title="Intraday Analyzer", layout="centered")
@@ -19,11 +20,10 @@ if st.button("🔍 Analyze Stock", type="primary"):
             if len(df) < 30:
                 st.error("Not enough data. Market may be closed.")
             else:
-                df['EMA9'] = ta.ema(df['Close'], length=9)
-                df['EMA21'] = ta.ema(df['Close'], length=21)
-                df['RSI'] = ta.rsi(df['Close'], length=14)
-                st_df = ta.supertrend(df['High'], df['Low'], df['Close'], length=10, multiplier=3)
-                df = pd.concat([df, st_df], axis=1)
+                df['EMA9'] = EMAIndicator(df['Close'], window=9).ema_indicator()
+df['EMA21'] = EMAIndicator(df['Close'], window=21).ema_indicator()
+df['RSI'] = RSIIndicator(df['Close'], window=14).rsi()
+                
                 df['VWAP'] = ta.vwap(df['High'], df['Low'], df['Close'], df['Volume'])
 
                 latest = df.iloc[-1]
@@ -31,7 +31,7 @@ if st.button("🔍 Analyze Stock", type="primary"):
 
                 ema_bull = latest['EMA9'] > latest['EMA21']
                 rsi_ok = latest['RSI'] > 50
-                super_ok = latest.get('SUPERTd_10_3.0', 0) > 0
+                super_ok = True
                 vwap_ok = price > latest['VWAP']
 
                 if ema_bull and rsi_ok and super_ok and vwap_ok:
